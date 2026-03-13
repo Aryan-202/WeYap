@@ -8,6 +8,9 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0"
   },
+  "scripts": {
+    "dev": "bun --hot index.ts"
+  },
   "peerDependencies": {
     "typescript": "^5"
   },
