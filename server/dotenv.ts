@@ -1,5 +1,6 @@
 const appconfig = {
-    PORT: process.env.PORT 
+    PORT: process.env.PORT || 3000,
+    NODE_ENV:  process.env.NODE_ENV,
 }
 
 export default appconfig
