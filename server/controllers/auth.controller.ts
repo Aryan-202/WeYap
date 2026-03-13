@@ -10,25 +10,30 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter: adapter });
 
-export const login = async (_req: Request, res: Response) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        username: "Aryan-202",
-      },
-    });
+export const login = async (req: Request, res: Response): Promise<any> => {
+  const { username, password } = req.body;
 
-    if (!user) {
-      return res.status(404).json({
-        msg: "available nahi hai user",
-      });
-    }
-    return res.status(200).json({
-      msg: "available hai user",
+  if (!username || !password) {
+    return res.json({
+      msg: "kuch to missing hai check kar",
     });
-  } catch (error) {
-    res.status(500).json({
-      msg: error,
+  }
+
+  const isUserExisting = await prisma.user.findUnique({
+    where: {
+      username: username,
+    },
+  });
+
+  const isPasswordCorrect = await prisma.user.findFirst({
+    where: {
+        name: password
+    }
+  })
+
+  if (isUserExisting) {
+    res.json({
+      msg: "hai bhai tu jinda hai",
     });
   }
 };
@@ -62,4 +67,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       msg: "password match nhi kar ra",
     });
   }
+  return res.json({
+    msg: "register kar le",
+  });
 };
