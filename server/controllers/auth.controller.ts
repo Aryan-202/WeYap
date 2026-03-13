@@ -25,9 +25,9 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     },
   });
 
-  const isPasswordCorrect = await prisma.user.findFirst({
+  const hashpassword = await prisma.user.findFirst({
     where: {
-        name: password
+        password: password
     }
   })
 
