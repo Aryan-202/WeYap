@@ -12,13 +12,180 @@ datasource db {
   provider = "postgresql"
 }
 
+enum YapType {
+  TEXT
+  IMAGE
+  VIDEO
+  VOICE_NOTE
+  YAP_STREAK
+}
 
-model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  name String
-  username String @unique
-  password String
+enum Vibe {
+  ONLINE
+  AWAY
+  OFFLINE
+  YAPPING
+  ZONED_OUT
+}
+
+enum RoomRole {
+  OWNER
+  ADMIN
+  MEMBER
+  LURKER
+}
+
+enum RoomType {
+  DM
+  ROOM
+  PUBLIC
+}
+
+enum ReceiptStatus {
+  SENT
+  DELIVERED
+  SEEN
+}
+
+model Yapper {
+  id               String   @id @default(cuid())
+  yapTag           String   @unique
+  displayName      String
+  bio              String?
+  vibe             Vibe     @default(OFFLINE)
+  lastYappedAt     DateTime @updatedAt
+  yapStreak        Int      @default(0)
+  profilePic       String?
+  isVerifiedYapper Boolean  @default(false)
+
+  // Relations
+  roomMemberships RoomMember[]
+  yaps            Yap[]
+  reactions       Reaction[]
+  blocks          Block[]      @relation("Blocker")
+  blockedBy       Block[]      @relation("Blocked")
+  receipts        YapReceipt[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  name      String?
+  type      RoomType @default(DM)
+  createdBy String
+  roomTag   String?  @unique
+  isPrivate Boolean  @default(true)
+
+  // Relations
+  members  RoomMember[]
+  yaps     Yap[]
+  settings RoomSettings?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RoomMember {
+  id         String   @id @default(cuid())
+  roomId     String
+  yapperId   String
+  role       RoomRole @default(MEMBER)
+  nickname   String?
+  lastReadAt DateTime @default(now())
+  isMuted    Boolean  @default(false)
+  mutedUntil DateTime?
+
+  // Relations
+  room   Room   @relation(fields: [roomId], references: [id])
+  yapper Yapper @relation(fields: [yapperId], references: [id])
+
+  @@unique([roomId, yapperId])
+  @@map("room_members")
+}
+
+model RoomSettings {
+  id           String   @id @default(cuid())
+  roomId       String   @unique
+  slowMode     Int      @default(0)
+  whoCanSend   String   @default("everyone")
+  description  String?
+  customEmojis String[]
+
+  // Relations
+  room Room @relation(fields: [roomId], references: [id])
+
+  @@map("room_settings")
+}
+
+model Yap {
+  id         String   @id @default(cuid())
+  roomId     String
+  yapperId   String
+  type       YapType  @default(TEXT)
+  content    String
+  isDeleted  Boolean  @default(false)
+  replyToId  String?
+
+  // Relations
+  room      Room     @relation(fields: [roomId], references: [id])
+  yapper    Yapper   @relation(fields: [yapperId], references: [id])
+  replies   Yap[]    @relation("YapReplies")
+  parent    Yap?     @relation("YapReplies", fields: [replyToId], references: [id])
+  reactions Reaction[]
+  receipts  YapReceipt[]
+
+  sentAt   DateTime @default(now())
+  editedAt DateTime?
+
+  @@index([roomId, sentAt])
+  @@map("yaps")
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  yapId     String
+  yapperId  String
+  emoji     String
+
+  // Relations
+  yap    Yap    @relation(fields: [yapId], references: [id])
+  yapper Yapper @relation(fields: [yapperId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([yapId, yapperId, emoji])
+  @@map("reactions")
+}
+
+model YapReceipt {
+  id        String        @id @default(cuid())
+  yapId     String
+  yapperId  String
+  status    ReceiptStatus @default(SENT)
+  seenAt    DateTime?
+
+  // Relations
+  yap    Yap    @relation(fields: [yapId], references: [id])
+  yapper Yapper @relation(fields: [yapperId], references: [id])
+
+  @@unique([yapId, yapperId])
+  @@map("yap_receipts")
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  reason    String?
+
+  // Relations
+  blocker Yapper @relation("Blocker", fields: [blockerId], references: [id])
+  blocked Yapper @relation("Blocked", fields: [blockedId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
 }
