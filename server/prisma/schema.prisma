@@ -51,12 +51,14 @@ model Yapper {
   id               String   @id @default(cuid())
   yapTag           String   @unique
   displayName      String
+  email            String   @unique
   bio              String?
   vibe             Vibe     @default(OFFLINE)
   lastYappedAt     DateTime @updatedAt
   yapStreak        Int      @default(0)
   profilePic       String?
   isVerifiedYapper Boolean  @default(false)
+  password         String
 
   // Relations
   roomMemberships RoomMember[]
@@ -88,13 +90,13 @@ model Room {
 }
 
 model RoomMember {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   roomId     String
   yapperId   String
-  role       RoomRole @default(MEMBER)
+  role       RoomRole  @default(MEMBER)
   nickname   String?
-  lastReadAt DateTime @default(now())
-  isMuted    Boolean  @default(false)
+  lastReadAt DateTime  @default(now())
+  isMuted    Boolean   @default(false)
   mutedUntil DateTime?
 
   // Relations
@@ -120,23 +122,23 @@ model RoomSettings {
 }
 
 model Yap {
-  id         String   @id @default(cuid())
-  roomId     String
-  yapperId   String
-  type       YapType  @default(TEXT)
-  content    String
-  isDeleted  Boolean  @default(false)
-  replyToId  String?
+  id        String  @id @default(cuid())
+  roomId    String
+  yapperId  String
+  type      YapType @default(TEXT)
+  content   String
+  isDeleted Boolean @default(false)
+  replyToId String?
 
   // Relations
-  room      Room     @relation(fields: [roomId], references: [id])
-  yapper    Yapper   @relation(fields: [yapperId], references: [id])
-  replies   Yap[]    @relation("YapReplies")
-  parent    Yap?     @relation("YapReplies", fields: [replyToId], references: [id])
+  room      Room         @relation(fields: [roomId], references: [id])
+  yapper    Yapper       @relation(fields: [yapperId], references: [id])
+  replies   Yap[]        @relation("YapReplies")
+  parent    Yap?         @relation("YapReplies", fields: [replyToId], references: [id])
   reactions Reaction[]
   receipts  YapReceipt[]
 
-  sentAt   DateTime @default(now())
+  sentAt   DateTime  @default(now())
   editedAt DateTime?
 
   @@index([roomId, sentAt])
@@ -144,10 +146,10 @@ model Yap {
 }
 
 model Reaction {
-  id        String   @id @default(cuid())
-  yapId     String
-  yapperId  String
-  emoji     String
+  id       String @id @default(cuid())
+  yapId    String
+  yapperId String
+  emoji    String
 
   // Relations
   yap    Yap    @relation(fields: [yapId], references: [id])
@@ -160,11 +162,11 @@ model Reaction {
 }
 
 model YapReceipt {
-  id        String        @id @default(cuid())
-  yapId     String
-  yapperId  String
-  status    ReceiptStatus @default(SENT)
-  seenAt    DateTime?
+  id       String        @id @default(cuid())
+  yapId    String
+  yapperId String
+  status   ReceiptStatus @default(SENT)
+  seenAt   DateTime?
 
   // Relations
   yap    Yap    @relation(fields: [yapId], references: [id])
@@ -175,7 +177,7 @@ model YapReceipt {
 }
 
 model Block {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   blockerId String
   blockedId String
   reason    String?

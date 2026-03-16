@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
-import * as bcrypt from "bcrypt";
-import prisma from "../config/prisma";
 import { loginSchema, registerSchema } from "../validators/auth.validator";
+import { registerService, loginService } from "../services/auth.service";
 
 export const login = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -9,34 +8,22 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     if (!validatedData.success) {
       return res.status(400).json({
-        msg: validatedData.error.message,
+        msg: validatedData.error.message || "Login data galat hai",
       });
     }
 
-    const { username, password } = validatedData.data;
+    const { yapTag, password } = validatedData.data;
 
-    const user = await prisma.user.findFirst({
-      where: {
-        username: username,
-      },
-    });
+    const result = await loginService(yapTag, password);
 
-    if (!user) {
-      return res.status(404).json({
-        msg: "bhai tu exist nahi karta",
-      });
+    if (typeof result === "string") {
+      return res.status(400).json({ msg: result });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        msg: "bhai password galat hai",
-      });
-    }
-
-    return res.json({
-      msg: "login ho gya",
+    return res.status(200).json({
+      msg: "login successful",
+      yapper: result.yapper,
+      token: result.token,
     });
   } catch (error) {
     console.log(error);
@@ -52,42 +39,26 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
     if (!validatedData.success) {
       return res.status(400).json({
-        msg: validatedData.error.message,
+        msg: validatedData.error.message || "Registration data galat hai",
       });
     }
 
-    const { email, name, username, password } = validatedData.data;
+    const { yapTag, displayName, password, email } = validatedData.data;
 
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email: email }, { username: username }],
-      },
-    });
+    const result = await registerService(yapTag, displayName, password, email);
 
-    if (existingUser) {
-      return res.status(409).json({
-        msg: "bhai tu already exist karta hai",
-      });
+    if (typeof result === "string") {
+      return res.status(400).json({ msg: result });
     }
 
-    const saltRounds = 10;
-    const hashpassword = await bcrypt.hash(password, saltRounds);
-
-    await prisma.user.create({
-      data: {
-        name: name,
-        username: username,
-        password: hashpassword,
-        email: email,
-      },
-    });
-
-    return res.json({
+    return res.status(201).json({
       msg: "register ho gya",
+      yapper: result.yapper,
+      token: result.token,
     });
   } catch (error) {
     console.log(error);
-    return res.json({
+    return res.status(500).json({
       msg: "internal server error ho gya",
     });
   }
