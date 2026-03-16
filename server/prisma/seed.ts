@@ -10,13 +10,13 @@ const prisma = new PrismaClient({
   adapter: adapter,
 });
 
-const userData: Prisma.UserCreateInput[] = [
-  { email: "test@email.com", name: "Aryan", username: "Aryan-202", password: "some_password" },
+const userData: Prisma.YapperCreateInput[] = [
+  { email: "test@email.com", displayName: "Aryan", yapTag: "Aryan-202", password: "some_password" },
 ];
 
 export async function main() {
   for (const u of userData) {
-    await prisma.user.create({
+    await prisma.yapper.create({
       data: u,
     });
   }
