@@ -2,6 +2,7 @@ import type { Response } from "express";
 import type { AuthRequest } from "../middlewares/auth.middleware";
 import { createRoomSchema, updateRoomSchema, addMemberSchema, createDMSchema } from "../validators/room.validator";
 import * as roomService from "../services/room.service";
+import { emitToRoom } from "../config/socket";
 
 export const createRoom = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
@@ -150,6 +151,23 @@ export const removeMember = async (req: AuthRequest, res: Response): Promise<any
     return res.status(200).json({ msg: "Member ko laat maar di gayi" });
   } catch (error) {
     console.error("Error in removeMember controller:", error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+export const markAsRead = async (req: AuthRequest, res: Response): Promise<any> => {
+  try {
+    const roomId = req.params.id as string;
+    await roomService.markAsRead(roomId, req.user!.id);
+    
+    emitToRoom(roomId, "room_read", { 
+        roomId, 
+        userId: req.user!.id 
+    });
+
+    return res.status(200).json({ msg: "Padh liya bhai" });
+  } catch (error) {
+    console.error("Error in markAsRead controller:", error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 };

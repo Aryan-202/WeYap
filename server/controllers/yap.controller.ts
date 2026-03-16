@@ -3,6 +3,7 @@ import type { AuthRequest } from "../middlewares/auth.middleware";
 import { sendYapSchema, updateYapSchema, reactYapSchema } from "../validators/yap.validator";
 import * as yapService from "../services/yap.service";
 import * as roomService from "../services/room.service";
+import { emitToRoom } from "../config/socket";
 
 export const sendYap = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
@@ -23,6 +24,8 @@ export const sendYap = async (req: AuthRequest, res: Response): Promise<any> => 
     if (!yap) {
       return res.status(500).json({ msg: "Yap nahi bhej paaye" });
     }
+
+    emitToRoom(roomId, "new_yap", yap);
 
     return res.status(201).json(yap);
   } catch (error) {
@@ -66,6 +69,8 @@ export const updateYap = async (req: AuthRequest, res: Response): Promise<any> =
       return res.status(404).json({ msg: "Yap nahi mila ya tu uska owner nahi hai" });
     }
 
+    emitToRoom(yap.roomId, "yap_updated", yap);
+
     return res.status(200).json(yap);
   } catch (error) {
     console.error("Error in updateYap controller:", error);
@@ -82,6 +87,8 @@ export const deleteYap = async (req: AuthRequest, res: Response): Promise<any> =
     if (!yap) {
       return res.status(404).json({ msg: "Yap nahi mila ya tu delete nahi kar sakta" });
     }
+
+    emitToRoom(yap.roomId, "yap_deleted", { yapId: id });
 
     return res.status(200).json({ msg: "Yap khatam" });
   } catch (error) {
@@ -101,6 +108,9 @@ export const reactYap = async (req: AuthRequest, res: Response): Promise<any> =>
     }
 
     const reaction = await yapService.addReaction(id as string, req.user!.id, validatedData.data.emoji);
+    if (reaction) {
+        emitToRoom(reaction.yap.roomId, "yap_reaction_added", reaction);
+    }
     return res.status(200).json(reaction);
   } catch (error) {
     console.error("Error in reactYap controller:", error);
@@ -118,7 +128,10 @@ export const unreactYap = async (req: AuthRequest, res: Response): Promise<any> 
       return res.status(400).json({ msg: validatedData.error.issues[0]?.message || "Validation error" });
     }
 
-    await yapService.removeReaction(id as string, req.user!.id, validatedData.data.emoji);
+    const reaction = await yapService.removeReaction(id as string, req.user!.id, validatedData.data.emoji);
+    if (reaction) {
+        emitToRoom(reaction.yap.roomId, "yap_reaction_removed", reaction);
+    }
     return res.status(200).json({ msg: "Reaction hata diya" });
   } catch (error) {
     console.error("Error in unreactYap controller:", error);

@@ -1,8 +1,14 @@
+import { createServer } from "http";
 import app from "./app";
 import appconfig from "./dotenv";
+import { initSocket } from "./config/socket";
 
-const port = appconfig.PORT
+const port = appconfig.PORT;
+const httpServer = createServer(app);
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+// Initialize Socket.io
+initSocket(httpServer);
+
+httpServer.listen(port, () => {
+  console.log(`Server listening on port ${port} 🚀`);
 });

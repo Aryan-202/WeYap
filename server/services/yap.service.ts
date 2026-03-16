@@ -134,6 +134,13 @@ export const addReaction = async (yapId: string, yapperId: string, emoji: string
       update: {
         emoji,
       },
+      include: {
+        yap: {
+          select: {
+            roomId: true,
+          },
+        },
+      },
     });
   } catch (error) {
     console.error("Error in addReaction service:", error);
@@ -149,6 +156,13 @@ export const removeReaction = async (yapId: string, yapperId: string, emoji: str
           yapId,
           yapperId,
           emoji,
+        },
+      },
+      include: {
+        yap: {
+          select: {
+            roomId: true,
+          },
         },
       },
     });

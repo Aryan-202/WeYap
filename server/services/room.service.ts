@@ -264,3 +264,22 @@ export const checkMembership = async (roomId: string, yapperId: string) => {
     return null;
   }
 };
+
+export const markAsRead = async (roomId: string, yapperId: string) => {
+  try {
+    return await prisma.roomMember.update({
+      where: {
+        roomId_yapperId: {
+          roomId,
+          yapperId,
+        },
+      },
+      data: {
+        lastReadAt: new Date(),
+      },
+    });
+  } catch (error) {
+    console.error("Error in markAsRead service:", error);
+    return null;
+  }
+};
