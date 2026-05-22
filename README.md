@@ -15,7 +15,7 @@ To recreate this project with the same configuration:
 
 ```sh
 # recreate this project
-bun x sv@0.15.3 create --template minimal --types ts --add prettier eslint vitest="usages:component,unit" playwright tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:vercel" drizzle="database:sqlite+sqlite:libsql" better-auth="demo:password,github" mdsvex paraglide="languageTags:en, es+demo:yes" storybook mcp="ide:claude-code,cursor,gemini,opencode,vscode,other+setup:remote" --install bun .
+bun x sv@0.15.3 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:vercel" drizzle="database:postgresql+postgresql:neon" better-auth="demo:password,github" mdsvex paraglide="languageTags:en, es+demo:yes" storybook mcp="ide:claude-code,cursor,gemini,opencode,vscode,other+setup:remote" --install bun .
 ```
 
 ## Developing
