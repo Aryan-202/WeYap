@@ -29,3 +29,8 @@ project.inlang/cache/
 
 *storybook.log
 storybook-static
+
+
+# ide
+.vscode/copy-all-files/
+.idea
