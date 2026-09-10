@@ -1,11 +1,37 @@
-import { Router } from "express";
+/**
+ * @fileoverview Express router defining API endpoints for user resources.
+ * Handles routes for fetching all users, fetching a user by ID, and creating a user.
+ * @module routes/user
+ */
 
+import { Router } from "express";
 import { getUsers, createUser, getUserById } from "../controllers/user.controller.js";
 
-const userRouter = Router()
+/**
+ * Express router instance for user endpoints.
+ * @type {import('express').Router}
+ */
+const userRouter = Router();
 
-userRouter.get('/', getUsers);
-userRouter.get('/:id', getUserById);
-userRouter.post('/', createUser);
+/**
+ * @route GET /api/v1/users
+ * @desc Retrieve all users
+ * @access Public
+ */
+userRouter.get("/", getUsers);
 
-export default userRouter
+/**
+ * @route GET /api/v1/users/:id
+ * @desc Retrieve a single user by ID
+ * @access Public
+ */
+userRouter.get("/:id", getUserById);
+
+/**
+ * @route POST /api/v1/users
+ * @desc Create a new user
+ * @access Public
+ */
+userRouter.post("/", createUser);
+
+export default userRouter;

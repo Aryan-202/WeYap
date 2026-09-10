@@ -1,5 +1,15 @@
+/**
+ * @fileoverview User Mongoose model definition and schema configuration.
+ * Defines the user schema, properties, constraints, timestamps, and JSON serialization transforms.
+ * @module models/user
+ */
+
 import mongoose from "mongoose";
 
+/**
+ * Mongoose schema definition for User entities.
+ * @type {import('mongoose').Schema}
+ */
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -45,6 +55,9 @@ const UserSchema = new mongoose.Schema(
   },
 );
 
+/**
+ * Configure schema transformation on JSON serialization to omit sensitive password field.
+ */
 UserSchema.set("toJSON", {
   transform: (_doc, ret) => {
     delete ret.password;
@@ -52,5 +65,10 @@ UserSchema.set("toJSON", {
   },
 });
 
+/**
+ * Mongoose model for User collection.
+ * @type {import('mongoose').Model}
+ */
 const User = mongoose.model("User", UserSchema);
+
 export default User;
