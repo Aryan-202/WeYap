@@ -1,16 +1,20 @@
 import helmet from "helmet";
-import express from 'express'
+import express from "express";
 import morgan from "morgan";
 import appConf from "../dotenv.js";
+import userRouter from "./routes/user.routes.js";
 
-const app = express()
-const morganFormat = appConf.NODE_ENV === 'production' ? 'combined' : 'dev'
+const app = express();
+const morganFormat = appConf.NODE_ENV === "production" ? "combined" : "dev";
 
-app.use(helmet())
-app.use(morgan(morganFormat))
+app.use(helmet());
+app.use(morgan(morganFormat));
+app.use(express.json());
 
-app.get('/', (_req, res) => {
-    res.send("server is running...")
-})
+app.use("/api/v1/users", userRouter);
 
-export default app
+app.get("/", (_req, res) => {
+  res.send("server is running...");
+});
+
+export default app;
