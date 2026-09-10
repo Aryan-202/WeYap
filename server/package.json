@@ -1,0 +1,18 @@
+{
+  "name": "we-yap-server",
+  "version": "0.1.0",
+  "description": "this is server for we-yap chat app",
+  "author": "Aryan Vishwakarma",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
