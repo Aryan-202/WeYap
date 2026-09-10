@@ -1,7 +1,6 @@
-import express from "express";
 import appConf from "./dotenv.js";
+import app from "./src/app.js";
 
-const app = express();
 const PORT = appConf.PORT;
 
 app.get("/", (_req, res) => {
