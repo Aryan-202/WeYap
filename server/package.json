@@ -6,7 +6,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "dev": "nodemon index.js"
   },
   "dependencies": {
@@ -20,7 +20,8 @@
     "zod": "^4.6.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "vitest": "^5.0.0"
   },
   "allowScripts": {
     "bcrypt@6.0.0": true
