@@ -11,5 +11,22 @@ import * as z from "zod";
  * @type {import('zod').ZodObject<any>}
  */
 const User = z.object({
-  // TODO: implement validator for users
-});
+  username: z.string().trim().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),
+  email: z.email(),
+  password: z.string().min(6).max(72),
+  avatar: z.url().optional(),
+  isOnline: z.boolean().optional(),
+  socketId: z.string().nullable().optional(),
+  friends: z.array(z.string()).optional(),
+});
+
+export const signUpSchema = z.object({
+  username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),
+  email: z.email(),
+  password: z.string().min(8).max(72),
+})
+
+export const signInSchema = z.object({
+  email: z.email(),
+  password: z.string().min(1),
+})
