@@ -1,0 +1,15 @@
+{
+  "name": "win11",
+  "version": "0.1.0",
+  "description": "this is win11 app for we yap",
+  "author": "Aryan Vishwakarma",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "electron": "^44.3.0"
+  }
+}
